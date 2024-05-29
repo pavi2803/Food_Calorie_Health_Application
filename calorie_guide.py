@@ -54,10 +54,11 @@ submit=st.button("Tell me about this food")
 
 input_prompt="""
 Do the following tasks:
+    Firstly, if the image is not a food item, Just say "Its not a food item, Please upload a food image".
+    If it's a food item, proceed with the following:
     Name the Dish in the format - "This is - "
-    List the items present in the food plate or in the display.
-    Provide the details of every food items with calories intake according to the estimated quantity present in the food
-                   in below format
+    List the items present in the food plate or in the display in the below format:
+    
     Food item 1: (approx calories - .....)
     
     Food item 2: (approx calories - .....)
@@ -65,13 +66,36 @@ Do the following tasks:
     ----
     ----
 
-Display Possible harmful ingredients present in the food that might impact health in the following format:
-    1. ingredient 1- cause1, cause2...
-    2. ingredient 2 - cause1, cause2..
-    
+Display Possible harmful ingredients and healthy ingredients present in the food that might impact health in the following format:
+    1. Food item 1: 
+        
+        What's good in it?
+        * Healthy ingredient 1..
+        * Healthy ingredient 2..
+        ---
+        ---
+        What's bad in it?
+        * Unnhealthy ingredient 1..
+        * Unhealthy ingredient 2..
+        ---
+        ---
+    2. Food item 2: 
+        
+        What's good in it?
+        * Healthy ingredient 1..
+        * Healthy ingredient 2..
+        ---
+        ---
+        What's bad in it?
+        * Unnhealthy ingredient 1..
+        * Unhealthy ingredient 2..
+        ---
+        ---
+    ---
+    ---
     
 Total Estimated Calories:
-    and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of daily calorie consumption"
+    and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption
 """
 
 ## If submit button is clicked
