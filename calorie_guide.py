@@ -10,7 +10,7 @@ import os
 import google.generativeai as genai
 from PIL import Image
 
-genai.configure(api_key="AIzaSyB4btXoYPwPUSAz37MJbyt7xUQwabRcIVg")
+genai.configure(api_key="AIzaSyA4f-tjGl_eqaY445FLyPVJAPqOuH2ijMs")
 
 
 def get_gemini_repsonse(input_prompt,image):
