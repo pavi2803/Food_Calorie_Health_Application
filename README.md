@@ -24,8 +24,7 @@ Using advanced image recognition technology, the app delivers insights almost in
 
 ### Installation
 Clone the Repository:
-git clone https://github.com/yourusername/Calorie_Guide.git
-cd Calorie_Guide
+git clone https://github.com/pavi2803/Food_Calorie_Health_Application.git
 
 ### Install Dependencies:
 * pip install -r requirements.txt
