@@ -13,9 +13,10 @@ from PIL import Image
 genai.configure(api_key="AIzaSyB4btXoYPwPUSAz37MJbyt7xUQwabRcIVg")
 
 
-def get_gemini_repsonse(input_prompt,image):
-    model=genai.GenerativeModel('gemini-pro-vision')
-    response=model.generate_content([input_prompt,image[0]])
+def get_gemini_response(input_prompt, image):
+    model = genai.GenerativeModel('gemini-pro-vision')
+    # Assuming image is a list of dictionaries with mime type and data
+    response = model.generate_content([input_prompt, image[0]['data']])  # Use raw image data
     return response.text
 
 def input_image_setup(uploaded_file):
@@ -37,22 +38,19 @@ def input_image_setup(uploaded_file):
         
 st.set_page_config(page_title="Calorie")
 
-
 st.header("Know your Food Better")
 
 st.write("Upload the image for which you'd like to know the calorie information - ")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-image=""   
-
+image = ""    
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image.", use_column_width=True)
     
+submit = st.button("Tell me about this food")
 
-submit=st.button("Tell me about this food")
-
-input_prompt="""
+input_prompt = """
 Do the following tasks:
     Firstly, if the image is not a food item, Just say "Its not a food item, Please upload a food image".
     If it's a food item, proceed with the following:
@@ -60,9 +58,8 @@ Do the following tasks:
     List the items present in the food plate or in the display in the below format:
     
     Food item 1: (approx calories - .....)
-    
+
     Food item 2: (approx calories - .....)
-    
     ----
     ----
 
@@ -75,7 +72,7 @@ Display Possible harmful ingredients and healthy ingredients present in the food
         ---
         ---
         What's bad in it?
-        * Unnhealthy ingredient 1..
+        * Unhealthy ingredient 1..
         * Unhealthy ingredient 2..
         ---
         ---
@@ -87,7 +84,7 @@ Display Possible harmful ingredients and healthy ingredients present in the food
         ---
         ---
         What's bad in it?
-        * Unnhealthy ingredient 1..
+        * Unhealthy ingredient 1..
         * Unhealthy ingredient 2..
         ---
         ---
@@ -95,15 +92,13 @@ Display Possible harmful ingredients and healthy ingredients present in the food
     ---
     
 Total Estimated Calories:
-    and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption
+    and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption"
 """
 
 ## If submit button is clicked
-
 if submit:
-    image_data=input_image_setup(uploaded_file)
-    response=get_gemini_repsonse(input_prompt,image_data)
+    image_data = input_image_setup(uploaded_file)
+    response = get_gemini_response(input_prompt, image_data)
     st.subheader("Food Calorie Insights:")
     st.write(response)
-
     
