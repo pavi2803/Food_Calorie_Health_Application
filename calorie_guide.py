@@ -16,7 +16,7 @@ genai.configure(api_key="AIzaSyB4btXoYPwPUSAz37MJbyt7xUQwabRcIVg")
 def get_gemini_response(input_prompt, image):
     model = genai.GenerativeModel('gemini-1.5-flash')
     # Assuming image is a list of dictionaries with mime type and data
-    response = model.generate_content([input_prompt, image[0]['data']])  # Use raw image data
+    response = model.generate_content([input_prompt, image[0]['data']])
     return response.text
 
 def input_image_setup(uploaded_file):
