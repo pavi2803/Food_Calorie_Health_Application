@@ -10,12 +10,15 @@ genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 # Gemini model
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
+import base64
+import io
+from PIL import Image
 
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
         # Detect format
-        fmt = image.format  # 'JPEG', 'PNG'
-        mime_type = "image/jpeg" if fmt == "JPEG" else "image/png"
+        fmt = image.format or "PNG"  # Default to PNG if missing
+        mime_type = "image/jpeg" if fmt.upper() == "JPEG" else "image/png"
 
         # Convert to bytes
         img_bytes_io = io.BytesIO()
@@ -25,13 +28,11 @@ def get_gemini_response(input_prompt, image: Image.Image):
         # Base64 encode
         img_b64 = base64.b64encode(img_bytes).decode("utf-8")
 
-        # Correct request without 'content='
-        response = model.generate_content(
-            parts=[
-                {"text": input_prompt},
-                {"blob": {"mime_type": mime_type, "data": img_b64}}
-            ]
-        )
+        # Correct call: pass a list as the first positional argument
+        response = model.generate_content([
+            {"text": input_prompt},
+            {"blob": {"mime_type": mime_type, "data": img_b64}}
+        ])
 
         return response.text
     except Exception as e:
@@ -93,7 +94,6 @@ Display Possible harmful ingredients and healthy ingredients present in the food
 Total Estimated Calories:
 and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption"
 """
-
 if submit and uploaded_file:
     response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
