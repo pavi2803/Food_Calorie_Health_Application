@@ -16,15 +16,21 @@ genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 # Correct model name
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
-def get_gemini_response(input_prompt, image_bytes):
+def get_gemini_response(input_prompt, image: Image.Image):
     try:
+        # Convert PIL image to bytes
+        img_bytes = io.BytesIO()
+        image.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()
+
         response = model.generate_content([
             {"text": input_prompt},
-            {"image": image_bytes},
+            {"inline_image": img_bytes}  # Correct format
         ])
         return response.text
     except Exception as e:
         return f"❌ Error generating response: {e}"
+
 
 def input_image_setup(uploaded_file):
     return uploaded_file.getvalue()
