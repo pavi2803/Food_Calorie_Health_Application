@@ -25,14 +25,12 @@ def get_gemini_response(input_prompt, image: Image.Image):
         # Base64 encode
         img_b64 = base64.b64encode(img_bytes).decode("utf-8")
 
-        # Correct request with "parts" key
+        # Correct request without 'content='
         response = model.generate_content(
-            content={
-                "parts": [
-                    {"text": input_prompt},
-                    {"blob": {"mime_type": mime_type, "data": img_b64}}
-                ]
-            }
+            parts=[
+                {"text": input_prompt},
+                {"blob": {"mime_type": mime_type, "data": img_b64}}
+            ]
         )
 
         return response.text
