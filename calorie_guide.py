@@ -16,9 +16,11 @@ genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 # Correct model name
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
+import base64
+
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
-        # Determine the format and MIME type
+        # Determine format and MIME type
         fmt = image.format  # 'JPEG', 'PNG', etc.
         mime_type = "image/jpeg" if fmt == "JPEG" else "image/png"
 
@@ -27,21 +29,22 @@ def get_gemini_response(input_prompt, image: Image.Image):
         image.save(img_bytes_io, format=fmt)
         img_bytes = img_bytes_io.getvalue()
 
-        # Prepare the request in the correct format
+        # Encode bytes as base64
+        img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+
+        # Prepare request in the correct format
         response = model.generate_content([
             {"text": input_prompt},
             {
                 "blob": {
                     "mime_type": mime_type,
-                    "data": img_bytes
+                    "data": img_b64
                 }
             }
         ])
         return response.text
     except Exception as e:
         return f"❌ Error generating response: {e}"
-
-
 
 
 st.set_page_config(page_title="Calorie")
@@ -102,7 +105,6 @@ and display the proportion of this calorie with respect to total daily necessary
 """
 
 if submit and uploaded_file:
-    # Use the PIL image directly
     response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
     st.write(response)
