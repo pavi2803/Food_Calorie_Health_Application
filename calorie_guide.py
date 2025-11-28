@@ -1,65 +1,56 @@
 # -*- coding: utf-8 -*-
-"""
-Updated on July 16, 2025
-
-@author: Pavithra
-"""
-
 import streamlit as st
-import os
 import google.generativeai as genai
 from PIL import Image
 import io
+import base64
 
+# Configure your API key
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# Correct model name
+# Gemini model
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
-
-import base64
-
-import base64
-
-import base64
-import io
-from PIL import Image
 
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
-        # Detect image format and MIME type
-        fmt = image.format  # 'JPEG', 'PNG', etc.
+        # Detect format
+        fmt = image.format  # 'JPEG', 'PNG'
         mime_type = "image/jpeg" if fmt == "JPEG" else "image/png"
 
-        # Convert image to bytes
+        # Convert to bytes
         img_bytes_io = io.BytesIO()
         image.save(img_bytes_io, format=fmt)
         img_bytes = img_bytes_io.getvalue()
 
-        # Encode as base64
+        # Base64 encode
         img_b64 = base64.b64encode(img_bytes).decode("utf-8")
 
-        # Prepare API request
-        response = model.generate_content([
-            {"text": input_prompt},
-            {"blob": {"mime_type": mime_type, "data": img_b64}}
-        ])
+        # Correct request with "parts" key
+        response = model.generate_content(
+            content={
+                "parts": [
+                    {"text": input_prompt},
+                    {"blob": {"mime_type": mime_type, "data": img_b64}}
+                ]
+            }
+        )
 
         return response.text
     except Exception as e:
         return f"❌ Error generating response: {e}"
 
 
-
+# Streamlit UI
 st.set_page_config(page_title="Calorie")
 st.header("Know your Food Better")
 st.write("Upload an image to get calorie and health insights:")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg","jpeg","png"])
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image.", use_column_width=True)
 
-
+submit = st.button("Tell me about this food")
 
 input_prompt = """
 Do the following tasks:
@@ -105,14 +96,7 @@ Total Estimated Calories:
 and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption"
 """
 
-if st.button("Tell me about this food") and uploaded_file:
+if submit and uploaded_file:
     response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
     st.write(response)
-
-
-
-# if submit and uploaded_file:
-#     response = get_gemini_response(input_prompt, image)
-#     st.subheader("Food Calorie Insights:")
-#     st.write(response)
