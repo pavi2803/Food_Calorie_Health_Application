@@ -14,10 +14,13 @@ import base64
 import io
 from PIL import Image
 
+import base64
+import io
+from PIL import Image
+
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
-        # Detect format
-        fmt = image.format or "PNG"  # Default to PNG if missing
+        fmt = image.format or "PNG"
         mime_type = "image/jpeg" if fmt.upper() == "JPEG" else "image/png"
 
         # Convert to bytes
@@ -25,10 +28,10 @@ def get_gemini_response(input_prompt, image: Image.Image):
         image.save(img_bytes_io, format=fmt)
         img_bytes = img_bytes_io.getvalue()
 
-        # Base64 encode
+        # Encode as base64
         img_b64 = base64.b64encode(img_bytes).decode("utf-8")
 
-        # Correct call: pass a list as the first positional argument
+        # Pass list of dicts as the first argument (no keywords)
         response = model.generate_content([
             {"text": input_prompt},
             {"blob": {"mime_type": mime_type, "data": img_b64}}
@@ -37,6 +40,7 @@ def get_gemini_response(input_prompt, image: Image.Image):
         return response.text
     except Exception as e:
         return f"❌ Error generating response: {e}"
+
 
 
 # Streamlit UI
@@ -95,6 +99,7 @@ Total Estimated Calories:
 and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption"
 """
 if submit and uploaded_file:
+    image = Image.open(uploaded_file)  # Already in your code
     response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
     st.write(response)
