@@ -18,14 +18,24 @@ model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
-        # Convert PIL image to bytes
-        img_bytes = io.BytesIO()
-        image.save(img_bytes, format="PNG")
-        img_bytes = img_bytes.getvalue()
+        # Determine the format and MIME type
+        fmt = image.format  # 'JPEG', 'PNG', etc.
+        mime_type = "image/jpeg" if fmt == "JPEG" else "image/png"
 
+        # Convert image to bytes
+        img_bytes_io = io.BytesIO()
+        image.save(img_bytes_io, format=fmt)
+        img_bytes = img_bytes_io.getvalue()
+
+        # Prepare the request in the correct format
         response = model.generate_content([
             {"text": input_prompt},
-            {"inline_image": img_bytes}  # Correct format
+            {
+                "blob": {
+                    "mime_type": mime_type,
+                    "data": img_bytes
+                }
+            }
         ])
         return response.text
     except Exception as e:
