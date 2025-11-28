@@ -42,8 +42,7 @@ def get_gemini_response(input_prompt, image: Image.Image):
         return f"❌ Error generating response: {e}"
 
 
-def input_image_setup(uploaded_file):
-    return uploaded_file.getvalue()
+
 
 st.set_page_config(page_title="Calorie")
 st.header("Know your Food Better")
@@ -103,7 +102,7 @@ and display the proportion of this calorie with respect to total daily necessary
 """
 
 if submit and uploaded_file:
-    image_bytes = input_image_setup(uploaded_file)
-    response = get_gemini_response(input_prompt, image_bytes)
+    # Use the PIL image directly
+    response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
     st.write(response)
