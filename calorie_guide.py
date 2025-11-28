@@ -18,6 +18,8 @@ model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
 import base64
 
+import base64
+
 def get_gemini_response(input_prompt, image: Image.Image):
     try:
         # Determine format and MIME type
@@ -45,6 +47,7 @@ def get_gemini_response(input_prompt, image: Image.Image):
         return response.text
     except Exception as e:
         return f"❌ Error generating response: {e}"
+
 
 
 st.set_page_config(page_title="Calorie")
@@ -103,7 +106,6 @@ Display Possible harmful ingredients and healthy ingredients present in the food
 Total Estimated Calories:
 and display the proportion of this calorie with respect to total daily necessary calorie intake for a person. Do this in the format, "which is ...% of your daily calorie consumption"
 """
-
 if submit and uploaded_file:
     response = get_gemini_response(input_prompt, image)
     st.subheader("Food Calorie Insights:")
